@@ -3,7 +3,7 @@
 #   git config core.hooksPath .githooks
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
-# 1. Что кладём в коммит. Репозиторий публичный: данные учеников, учебники и пароли сюда не попадают.
+# 1. Что кладём в коммит: только то, из чего собирается сайт. Тяжёлое, учебники и данные учеников — мимо git.
 bad=$(git -c core.quotePath=false diff --cached --name-only --diff-filter=AM | grep -Ei '\.(pdf|docx?|xlsx?|zip|rar|key)$|(^|/)\.DS_Store$|(^|/)\.env$|[Оо]тч[её]т|[Rr]eport|[Кк]опия| copy|^index[ -].*\.html$')
 if [ -n "$bad" ]; then
   echo "⛔ В коммит попали файлы, которым в репозитории не место:"
@@ -15,7 +15,7 @@ big=$(git -c core.quotePath=false diff --cached --name-only --diff-filter=AM | w
   [ -f "$f" ] && [ "$(wc -c < "$f")" -gt 5000000 ] && echo "$f"
 done)
 if [ -n "$big" ]; then
-  echo "⛔ Файлы больше 5 МБ — сайт будет грузиться долго, история раздуется:"
+  echo "⛔ Файлы больше 5 МБ — git хранит каждую версию навсегда, репозиторий упрётся в пределы GitHub:"
   echo "$big" | sed 's/^/   /'
   exit 1
 fi
